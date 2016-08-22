@@ -38,7 +38,7 @@ def handle_command(command, channel):
 		if command.split(" ")[1].lower() == "weather":
 			response = city_temp(command.split("/")[1])
 		elif command.split(" ")[1].lower() == "forecast":
-			response = city_forecast(command.split(" ")[2].lower())
+			response = city_forecast(command.split("/")[1])
 		
 	elif command.split(" ")[0].lower() == "hello":
 		if command.split(" ")[1].lower() == "weather":
@@ -99,22 +99,20 @@ def city_temp(city):
 		return "Está uma temperatura de "+string_temp+"ºC. \nHave a nice day."
 
 def city_forecast(city):
-	if city == "aveiro":
-		#aveiro weather
-		content = urllib2.urlopen("http://api.openweathermap.org/data/2.5/forecast?id="+id_aveiro+"&units=metric&APPID="+APIKEY).read()
-		parsed_content = json.loads(content)
-		lista = parsed_content['list']
-		values = "Forecast para Aveiro: \n"
-		for p in lista:
-			#print ("date: "+p['dt_txt']+"; max_temp: "+ "%.2f" % p['main']['temp_max']+"; temp: "+ "%.2f" % p['main']['temp']+"; temp_min: "+ "%.2f" % p['main']['temp_min'])
-			
-			if p['dt_txt'].split(" ")[1] == "09:00:00" or p['dt_txt'].split(" ")[1] == "12:00:00" or p['dt_txt'].split(" ")[1] == "15:00:00":
-				values+="date: "+p['dt_txt']+"; max_temp: "+ "%.2f" % p['main']['temp_max']+"; temp: "+ "%.2f" % p['main']['temp']+"; temp_min: "+ "%.2f" % p['main']['temp_min']+"\n"
-				if p['dt_txt'].split(" ")[1] == "15:00:00":
-					values+="\n"
-		return values
-	else:
-		return ""
+	city_tmp = city.split(",")[0]
+	country = city.split(",")[1]
+	#aveiro weather
+	content = urllib2.urlopen("http://api.openweathermap.org/data/2.5/forecast?q="+city_tmp+","+country+"&units=metric&APPID="+APIKEY).read()
+	parsed_content = json.loads(content)
+	lista = parsed_content['list']
+	values = "Forecast para "+city_tmp+": \n"
+	for p in lista:
+		#print ("date: "+p['dt_txt']+"; max_temp: "+ "%.2f" % p['main']['temp_max']+"; temp: "+ "%.2f" % p['main']['temp']+"; temp_min: "+ "%.2f" % p['main']['temp_min'])	
+		if p['dt_txt'].split(" ")[1] == "09:00:00" or p['dt_txt'].split(" ")[1] == "12:00:00" or p['dt_txt'].split(" ")[1] == "15:00:00":
+			values+="date: "+p['dt_txt']+"; max_temp: "+ "%.2f" % p['main']['temp_max']+"; temp: "+ "%.2f" % p['main']['temp']+"; temp_min: "+ "%.2f" % p['main']['temp_min']+"\n"
+			if p['dt_txt'].split(" ")[1] == "15:00:00":
+				values+="\n"
+	return values
 
 
 
